@@ -1,5 +1,5 @@
 void set_bc(){
-//    int i;
+    // int i;
     set_bc_list[0]=0;
     set_bc_list[n_p-1]=0;
     printf("境界条件設定したよ\n");

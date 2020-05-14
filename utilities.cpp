@@ -280,6 +280,7 @@ void Dynamics(){
     char fname[100];// 配列の大きさに注意！！ zsh: abort というエラー出る．
     sprintf(fname,"array/u_dynamics_ad=%.2f_Di=%.2f.dat",ad,Di);
     ofstream out(fname,ios::app);
+    
     // File-initializing ios::appによるファイル上書きのため初期化が必要．
     ofstream out_tmp(fname);
     out_tmp.close();
@@ -287,7 +288,7 @@ void Dynamics(){
     for(n = 1; n < max_step; n++){
         if(n%50==0) printf("step number : %d\n",n);
         
-        // 中央差分法
+        // 中央差分法  差分法の結果と等価
         for(i=0;i<n_p;i++){
             M2dtSu[i]=0.0;
             for(j=n_link_start[i];j<n_link_start[i+1];j++){
