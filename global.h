@@ -4,6 +4,7 @@ using namespace std;
 const int n_p = 501; // the number of nodes
 const int n_e = n_p-1; // the number of elements
 const int d_o_f = 1; //degree of freedom it isn't used here.
+const int d_o_s = 6; // degree of SSFEM
 
 // Constants for conjugate gradient method
 #define Iter_Max 10000 // limit times for iterative methods
@@ -11,7 +12,7 @@ const int d_o_f = 1; //degree of freedom it isn't used here.
 
 // Physical parameters
 const double L = 1.0; // length
-const double ad = 0.5; // advection velosity
+const double ad = 0.0; // advection velosity
 const double Di = 0.01; // diffusion coefficient
 
 // Data regarding mesh
