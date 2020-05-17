@@ -1,8 +1,8 @@
 void Assign_array(){
-    x.assign(n_p*d_o_f,0.0);
+    x.assign(n_p,0.0);
     el.assign(n_e*2,0);
-    set_bc_list.assign(n_p,1);
-    u.assign(n_p,0.0);
+    set_bc_list.assign(n_p*d_o_s,1);
+    u.assign(n_p*d_o_s,0.0);
 }
 
 // e_linkとn_linkの構成

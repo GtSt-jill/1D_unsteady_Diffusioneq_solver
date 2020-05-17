@@ -1,10 +1,11 @@
 using namespace std;
 
 // Fundamental consts
-const int n_p = 501; // the number of nodes
+const int n_p = 10; // the number of nodes
 const int n_e = n_p-1; // the number of elements
 const int d_o_f = 1; //degree of freedom it isn't used here.
 const int d_o_s = 6; // degree of SSFEM
+const int KL = 2; // order of KL expansion
 
 // Constants for conjugate gradient method
 #define Iter_Max 10000 // limit times for iterative methods
@@ -14,6 +15,8 @@ const int d_o_s = 6; // degree of SSFEM
 const double L = 1.0; // length
 const double ad = 0.0; // advection velosity
 const double Di = 0.01; // diffusion coefficient
+const double c_o_v = 0.2; // coefficient of variation
+const double stan_len = L / 10;
 
 // Data regarding mesh
 vector <double> x; // x-axis coordinate
@@ -39,3 +42,9 @@ const double Courant = 0.1; // When using explicit method, we consider Courant c
 const double max_step = 1001;
 const double total_time = 1.0;
 double dt = total_time/max_step;
+
+
+//for Eigenvalue problem.
+vector <double> Cov;
+vector <doubel> eigenvectors;
+double eigenvalues;

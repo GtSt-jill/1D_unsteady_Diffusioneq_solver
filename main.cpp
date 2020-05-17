@@ -19,6 +19,7 @@
 #include "set_bc.cpp" // set boundary condtions
 #include "visualize.cpp" // visualize the obtained results
 #include "utilities.cpp" // solve equations
+#include "EigenValueProblem.cpp"
 
 // The program to solve Mu'+Ku=F. ' is a time-differential operator.
 
@@ -34,12 +35,14 @@ int main(void){
     InitialAdjacency();
     
     Calculate_matrix();
+
+    Calculate_Covmatrix();
     
-    set_bc(); // setting boundary condition
+    // set_bc(); // setting boundary condition
     
     // Jacobi_static(); // solve the linear equation by Jacobi scheme
     
-    Dynamics(); // dynamical analysis
+    // Dynamics(); // dynamical analysis
     
     //Calculation time
     clock_t end=clock();

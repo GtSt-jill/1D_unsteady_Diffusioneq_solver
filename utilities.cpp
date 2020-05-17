@@ -1,19 +1,3 @@
-//数値誤差を回避できる内積計算のための関数
-double dot_product(vector <double> &v, vector <double> &w, vector <double> &tmp, int n, int lg2n)
-{
-    int i,ii;
-    for(i=0; i<n_p; i++)
-    {
-        tmp[i]=v[i]*w[i];            //vとwの内積
-    }
-    for(ii=0; ii<lg2n; ii++)                    //lg2n回繰り返す
-    {
-        for(i=0; i<n/2; i++){tmp[i]+=tmp[(n-1)-i];}
-        n/=2;
-    }
-    return tmp[0];
-}
-
 // In the case that advection term is considerd, it is liable to forget that the A of a equation AX=b is asymmetric, so CG method can't be applied.
 // Jacobi method for static analysis
 void Jacobi_static(){
