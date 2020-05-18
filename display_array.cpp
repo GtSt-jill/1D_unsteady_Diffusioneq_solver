@@ -8,7 +8,7 @@ void display_array_double(vector <double> S, int N){
 void confirm_array_double(vector <double> S, int array_size, string file_name){
     int i;
     char fname[20];
-    sprintf(fname,"array/%s.dat",file_name.c_str());
+    sprintf(fname,"array/%s.csv",file_name.c_str());
     ofstream out(fname);
     for(i=0;i<array_size;i++){
         out<<S[i]<<endl;

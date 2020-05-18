@@ -18,8 +18,8 @@
 #include "Calculate_matrix.cpp" // calculate matrices and vectors
 #include "set_bc.cpp" // set boundary condtions
 #include "visualize.cpp" // visualize the obtained results
-#include "utilities.cpp" // solve equations
 #include "EigenValueProblem.cpp"
+#include "utilities.cpp" // solve equations
 
 // The program to solve Mu'+Ku=F. ' is a time-differential operator.
 
@@ -28,15 +28,17 @@ int main(void){
     int i;
     printf("節点数 : %d\n要素数 : %d\n", n_p, n_e);
 
-    Assign_array();
+    Assign_array(); // define arrays
     
-    input_file_reader();
+    input_file_reader(); // input node and element data
     
-    InitialAdjacency();
+    InitialAdjacency(); // construct geometry info
     
-    Calculate_matrix();
+    Calculate_matrix(); // construct matrices
 
-    Calculate_Covmatrix();
+    Calculate_Covmatrix(); // construct covariance matrix
+
+    Power_method(); // solve an eigenvalue problem of covariance matrix
     
     // set_bc(); // setting boundary condition
     

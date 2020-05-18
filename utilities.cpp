@@ -405,8 +405,8 @@ void Conjugate_gradient_method(){
             }
         }
         
-        c1=dot_product(r,r,tmp_vec,d_p_terms,n_p_Lg2);
-        c2=dot_product(p,KAtKAp,tmp_vec,d_p_terms,n_p_Lg2);
+        c1=dot_product(r,r,tmp_vec,d_p_terms,n_p_Lg2, n_p);
+        c2=dot_product(p,KAtKAp,tmp_vec,d_p_terms,n_p_Lg2, n_p);
         
         alpha=c1/c2;
         
@@ -418,14 +418,14 @@ void Conjugate_gradient_method(){
         // 境界条件のケア
         for(i=0;i<n_p;i++){if(set_bc_list[i]==0){r[i]=0.0;}}
         
-        err=dot_product(r,r,tmp_vec,d_p_terms,n_p_Lg2);
+        err=dot_product(r,r,tmp_vec,d_p_terms,n_p_Lg2, n_p);
         err/=n_p;
         
         if(iter==1) printf("LOOP : %d    %.10e\n", iter, err);
         if(iter%50==0) printf("LOOP : %d    %.10e\n", iter, err);
         if(EPS > err) break;
         
-        c3=dot_product(r,r,tmp_vec,d_p_terms,n_p_Lg2);
+        c3=dot_product(r,r,tmp_vec,d_p_terms,n_p_Lg2, n_p);
         beta=c3/c1;
         
         for(i=0; i<n_p; i++){p[i]=r[i]+beta*p[i];}
@@ -516,8 +516,8 @@ void cg_solver_dynamics(vector <double> b){
             }
         }
 
-        c1=dot_product(r,r,tmp_vec,d_p_terms,n_p_Lg2);
-        c2=dot_product(p,Mp,tmp_vec,d_p_terms,n_p_Lg2);
+        c1=dot_product(r,r,tmp_vec,d_p_terms,n_p_Lg2,n_p);
+        c2=dot_product(p,Mp,tmp_vec,d_p_terms,n_p_Lg2, n_p);
         alpha=c1/c2;
         
         for(i=0;i<n_p;i++){
@@ -528,13 +528,13 @@ void cg_solver_dynamics(vector <double> b){
         //　境界条件のケア
         for(i=0;i<n_p;i++){if(set_bc_list[i]==0){r[i]=0.0;}}
         
-        err=dot_product(r,r,tmp_vec,d_p_terms,n_p_Lg2);
+        err=dot_product(r,r,tmp_vec,d_p_terms,n_p_Lg2, n_p);
         err/=n_p;
         
         if(iter%50==0&&iter<1000){cout<<"error:"<<err<<endl;} // confirm an error.
         if(EPS > err) break;
 
-        c3=dot_product(r,r,tmp_vec,d_p_terms,n_p_Lg2);
+        c3=dot_product(r,r,tmp_vec,d_p_terms,n_p_Lg2, n_p);
         beta=c3/c1;
         // if(iter%50==0&&iter<1000){cout<<"beta:"<<beta<<endl;}
 

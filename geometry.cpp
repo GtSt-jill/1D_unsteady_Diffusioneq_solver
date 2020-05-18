@@ -3,6 +3,8 @@ void Assign_array(){
     el.assign(n_e*2,0);
     set_bc_list.assign(n_p*d_o_s,1);
     u.assign(n_p*d_o_s,0.0);
+    eigenvectors.assign(n_p*KL, 0.0);
+    eigenvalues.assign(KL, 0.0);
 }
 
 // e_linkとn_linkの構成
