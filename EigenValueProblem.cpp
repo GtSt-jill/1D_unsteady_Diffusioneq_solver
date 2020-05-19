@@ -267,3 +267,11 @@ void Normalize_Eigenfunction(){
     }
     confirm_array_double(eigenvectors, n_p*KL, "eigenvectors");
 }
+
+void Solve_Eigenvalue(){
+    Calculate_Covmatrix(); // construct covariance matrix
+
+    Power_method(); // solve an eigenvalue problem of covariance matrix
+
+    Normalize_Eigenfunction(); // normalize eigenfunctions
+}
