@@ -39,6 +39,8 @@ int main(void){
     Calculate_Covmatrix(); // construct covariance matrix
 
     Power_method(); // solve an eigenvalue problem of covariance matrix
+
+    Normalize_Eigenfunction();
     
     // set_bc(); // setting boundary condition
     

@@ -14,6 +14,20 @@ double dot_product(vector <double> &v, vector <double> &w, vector <double> &tmp,
     return tmp[0];
 }
 
+double element_length(int element_number){
+    int i;
+    int n0, n1;
+    double x0, x1;
+
+    n0 = el[2*element_number  ];
+    n1 = el[2*element_number+1];
+
+    x0 = x[n0];
+    x1 = x[n1];
+
+    return abs(x0 - x1);
+}
+
 double Covariance_Function(double x1, double x2){
     double d = abs(x1 - x2);
     return c_o_v * c_o_v * exp(- d / stan_len);
@@ -40,6 +54,7 @@ void Calculate_Covmatrix(){
                    Cov[n_p*i+j] += Covariance_Function(x0g, x1g)*l0*l1;
                }
             }
+            Cov[n_p*i+j] = Cov[n_p*i+j] / 4;
         }
     }
     printf("Covを構成したよ．\n");
@@ -160,7 +175,7 @@ void Power_method(){
                         Cov_ev1[i] += Cov[n_p*i+j] * eigenvector_tmp[j];
                     }
                 }
-            }else{
+            }else{ // 2つ目以降の固有値計算は前処理が必要．
                 // Cov*ev2の計算
                 for(i=0;i<n_p;i++){
                     Cov_ev2[i]=0;
@@ -184,7 +199,7 @@ void Power_method(){
                         }
 
                         for(i=0;i<n_p;i++) {Cov_ev2[i]-=eigenvalues[l]*ev1ev2*M_ev1[i];}
-                    }
+                }
                 for(i=0;i<n_p;i++){Cov_ev1[i]=Cov_ev2[i];}
             }
 
@@ -196,15 +211,59 @@ void Power_method(){
 
             eigenvalues[k] = eigen_norm*eigen_norm / dot_product(eigenvector_tmp,M_inv_Cov_ev,tmp_vec,d_p_terms,n_p_Lg2,n_p);
 
-            err = abs(eigenvalues[k]-eigenvalue_tmp); // / abs(eigenvalues[k]); // abs(eigen_value1);
+            err = abs(eigenvalues[k]-eigenvalue_tmp) / abs(eigenvalues[k]); // ! 相対誤差で評価
 
             if(err<EPS) break;
             for(i=0;i<n_p;i++){eigenvector_tmp[i]=M_inv_Cov_ev[i]/eigen_norm;}
         }
-        printf("Iteration : %d \teigenvalue %d : %f\n", iter, k+1, eigenvalues[k]);
+        printf("Iteration : %d \teigenvalue %d : %lf\n", iter, k+1, eigenvalues[k]);
         // cout<<"iteration:"<<iter<<" "<<"eigenvalue"<<k+1<<":"<<eigenvalues[k]<<endl;
         for(i=0;i<n_p;i++){eigenvectors[k*n_p+i]=eigenvector_tmp[i];}
-        confirm_array_double(eigenvectors, n_p*KL, "eigenvectors");
+        // confirm_array_double(eigenvectors, n_p*KL, "eigenvectors");
     }
+}
 
+void Normalize_Eigenfunction(){
+    int i, j, k, l, m;
+    int node;
+    int e0, e1;
+    double l0;
+    double normalize_const = 0;
+
+    vector <double> eigenvector_tmp;
+    eigenvector_tmp.assign(n_p, 0.0);
+
+    for(k=0; k<KL; k++){
+        normalize_const = 0; // ! 初期化
+        for(i=0; i<n_p; i++) {eigenvector_tmp[i] = eigenvectors[n_p*k+i];}
+
+        for(i=0; i<n_p; i++){
+            for(j=n_link_start[i]; j<n_link_start[i+1]; j++){
+                node = n_link[j];
+                if(i == node){
+                    for(l=e_link_start[i]; l<e_link_start[i+1]; l++){
+                        e0 = e_link[l];
+                        l0 = element_length(e0);
+                        normalize_const += l0 / 3 * eigenvector_tmp[i] * eigenvector_tmp[i];
+                    }
+                }else{
+                    for(l = e_link_start[i]; l<e_link_start[i+1]; l++){
+                        e0 = e_link[l];
+                        for(m=e_link_start[node]; m<e_link_start[node+1]; m++){
+                            e1 = e_link[m];
+                            if(e0 == e1){
+                                l0 = element_length(e0);
+                                normalize_const += l0 /6 * eigenvector_tmp[i] * eigenvector_tmp[node];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        normalize_const = sqrt(normalize_const);
+
+        for(i=0; i<n_p; i++){eigenvectors[n_p*k+i] = eigenvector_tmp[i] / normalize_const;}
+    }
+    confirm_array_double(eigenvectors, n_p*KL, "eigenvectors");
 }
