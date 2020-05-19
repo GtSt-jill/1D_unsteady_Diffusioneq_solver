@@ -18,7 +18,7 @@
 #include "Calculate_matrix.cpp" // calculate matrices and vectors
 #include "set_bc.cpp" // set boundary condtions
 #include "visualize.cpp" // visualize the obtained results
-#include "EigenValueProblem.cpp"
+#include "EigenValueProblem.cpp" // solve an eigenvalue problem
 #include "utilities.cpp" // solve equations
 
 // The program to solve Mu'+Ku=F. ' is a time-differential operator.

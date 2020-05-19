@@ -5,7 +5,7 @@ const int n_p = 100; // the number of nodes
 const int n_e = n_p-1; // the number of elements
 const int d_o_f = 1; //degree of freedom it isn't used here.
 const int d_o_s = 6; // degree of SSFEM
-const int KL = 1; // order of KL expansion
+const int KL = 3; // order of KL expansion
 
 // Constants for conjugate gradient method
 #define Iter_Max 10000 // limit times for iterative methods
@@ -16,7 +16,7 @@ const double L = 1.0; // length
 const double ad = 0.0; // advection velosity
 const double Di = 0.01; // diffusion coefficient
 const double c_o_v = 0.2; // coefficient of variation
-const double stan_len = L / 10;
+const double stan_len = L;
 
 // Data regarding mesh
 vector <double> x; // x-axis coordinate

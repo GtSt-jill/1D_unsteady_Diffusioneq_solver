@@ -16,7 +16,7 @@ double dot_product(vector <double> &v, vector <double> &w, vector <double> &tmp,
 
 double Covariance_Function(double x1, double x2){
     double d = abs(x1 - x2);
-    return c_o_v * exp(d / stan_len);
+    return c_o_v * c_o_v * exp(- d / stan_len);
 }
 
 void Calculate_Covmatrix(){
@@ -113,6 +113,7 @@ void eigen_cgmethod(vector <double> AA, vector <double> &q, vector <double> b){
         
         error = sqrt(dot_product(r,r,tmp_vec,d_p_terms,n_p_Lg2,n_p));
         if(error < EPS / n_p) break;
+        // cout << error << endl;
         c3=dot_product(r,r,tmp_vec,d_p_terms,n_p_Lg2,n_p);
         beta = c3/c1;
 
@@ -122,9 +123,10 @@ void eigen_cgmethod(vector <double> AA, vector <double> &q, vector <double> b){
 
 void Power_method(){
     int i,j,k,l;
+    int node;
     double err;
     int iter; // 冪乗法の繰り返し回数
-    int iter_max = 100;
+    int iter_max = 1000;
     double eigen_norm;
     double eigenvalue_tmp;
     double ev1ev2;
@@ -159,7 +161,31 @@ void Power_method(){
                     }
                 }
             }else{
+                // Cov*ev2の計算
+                for(i=0;i<n_p;i++){
+                    Cov_ev2[i]=0;
+                    for(j=0; j<n_p; j++){
+                        Cov_ev2[i] += Cov[n_p*i+j]*eigenvector_tmp[j];
+                    }
+                }
+                
+                vector <double> pre_eigenvector(n_p);
+                for(l=0;l<k;l++){
+                    for(i=0;i<n_p;i++){pre_eigenvector[i]=eigenvectors[l*n_p+i];}
+                        
+                        ev1ev2=dot_product(pre_eigenvector,eigenvector_tmp,tmp_vec,d_p_terms,n_p_Lg2,n_p);
+                        
+                        for(i=0; i<n_p; i++){
+                            M_ev1[i] = 0.0;
+                            for(j=n_link_start[i]; j<n_link_start[i+1]; j++){
+                                node = n_link[j];
+                                M_ev1[i] += M[j] * pre_eigenvector[node];
+                            }
+                        }
 
+                        for(i=0;i<n_p;i++) {Cov_ev2[i]-=eigenvalues[l]*ev1ev2*M_ev1[i];}
+                    }
+                for(i=0;i<n_p;i++){Cov_ev1[i]=Cov_ev2[i];}
             }
 
             eigen_cgmethod(M, M_inv_Cov_ev, Cov_ev1);
