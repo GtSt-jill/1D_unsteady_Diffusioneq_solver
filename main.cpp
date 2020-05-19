@@ -37,6 +37,8 @@ int main(void){
     Calculate_matrix(); // construct matrices
 
     Solve_Eigenvalue();
+
+    Calculate_Kmatrix();
     
     // set_bc(); // setting boundary condition
     

@@ -14,6 +14,7 @@ double dot_product(vector <double> &v, vector <double> &w, vector <double> &tmp,
     return tmp[0];
 }
 
+// 要素の長さを返す関数
 double element_length(int element_number){
     int i;
     int n0, n1;
@@ -28,11 +29,13 @@ double element_length(int element_number){
     return abs(x0 - x1);
 }
 
+// 共分散関数を定義
 double Covariance_Function(double x1, double x2){
     double d = abs(x1 - x2);
     return c_o_v * c_o_v * exp(- d / stan_len);
 }
 
+// 共分散マトリクスを構成
 void Calculate_Covmatrix(){
     int     i, j, k, l;
     int     e0, e1; // element
@@ -136,6 +139,7 @@ void eigen_cgmethod(vector <double> AA, vector <double> &q, vector <double> b){
     }
 }
 
+// 冪乗法により，固有値・固有ベクトルを計算
 void Power_method(){
     int i,j,k,l;
     int node;
@@ -223,6 +227,7 @@ void Power_method(){
     }
 }
 
+// 固有関数の正規化
 void Normalize_Eigenfunction(){
     int i, j, k, l, m;
     int node;
@@ -274,4 +279,82 @@ void Solve_Eigenvalue(){
     Power_method(); // solve an eigenvalue problem of covariance matrix
 
     Normalize_Eigenfunction(); // normalize eigenfunctions
+}
+
+void Calculate_Kmatrix(){
+    int i, j, k, l;
+    int j0, j1;
+    int itmp;
+    int node;
+    int n0, n1;
+    int NL = n_link.size();
+
+    double l0;
+    double x0, x1;
+
+    K.assign(NL*(KL+1), 0.0);
+
+    for(k=0; k<KL+1; k++){
+        if(k == 0){
+            for(i=0; i<n_e; i++){
+                l0 = element_length(i); // いらない
+                itmp = 2*i;
+                n0 = el[itmp  ];
+                n1 = el[itmp+1];
+        
+                x0 = x[n0];
+                x1 = x[n1];
+        
+                //n0について
+                for(j=n_link_start[n0];j<n_link_start[n0+1];j++){
+                    node = n_link[j];
+                    if(node == n0)      j0 = j;
+                    else if(node == n1) j1 = j;
+                }
+                K[NL*k+j0] += Di/(x1-x0);
+                K[NL*k+j1] += -Di/(x1-x0);
+        
+                //n1について
+                for(j=n_link_start[n1];j<n_link_start[n1+1];j++){
+                    node = n_link[j];
+                    if(node==n0)      j0=j;
+                    else if(node==n1) j1=j;
+                }
+                K[NL*k+j0] += -Di/(x1-x0);
+                K[NL*k+j1] += Di/(x1-x0);
+            }
+
+        }else{
+            for(i=0; i<n_e; i++){
+                l0 = element_length(i); // いらない
+                itmp = 2*i;
+                n0 = el[itmp  ];
+                n1 = el[itmp+1];
+        
+                x0 = x[n0];
+                x1 = x[n1];
+        
+                //n0について
+                for(j=n_link_start[n0];j<n_link_start[n0+1];j++){
+                    node = n_link[j];
+                    if(node == n0)      j0 = j;
+                    else if(node == n1) j1 = j;
+                }
+                K[NL*k+j0] +=  Di/(x1-x0)*sqrt(eigenvalues[k-1])*((eigenvectors[n_p*(k-1)+n0]+eigenvectors[n_p*(k-1)+n1]))/2;
+                K[NL*k+j1] += -Di/(x1-x0)*sqrt(eigenvalues[k-1])*((eigenvectors[n_p*(k-1)+n0]+eigenvectors[n_p*(k-1)+n1]))/2;
+        
+                //n1について
+                for(j=n_link_start[n1];j<n_link_start[n1+1];j++){
+                    node = n_link[j];
+                    if(node==n0)      j0=j;
+                    else if(node==n1) j1=j;
+                }
+                K[NL*k+j0] += -Di/(x1-x0)*sqrt(eigenvalues[k-1])*((eigenvectors[n_p*(k-1)+n0]+eigenvectors[n_p*(k-1)+n1]))/2;
+                K[NL*k+j1] +=  Di/(x1-x0)*sqrt(eigenvalues[k-1])*((eigenvectors[n_p*(k-1)+n0]+eigenvectors[n_p*(k-1)+n1]))/2;
+            }
+        }
+    }
+
+    printf("K_SSFEMを構成したよ．\n");
+    confirm_array_double(K, NL*(KL+1), "K");
 }

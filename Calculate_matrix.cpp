@@ -53,7 +53,7 @@ void Calculate_Mmatrix(){
     cout<<"M行列構成したよ"<<endl;
     // confirm_Matrix(M,"M");
 }
-
+/*
 // 剛性行列の構成
 void Calculate_Kmatrix(){
     int i,j,jstart,jend,k;
@@ -96,6 +96,7 @@ void Calculate_Kmatrix(){
     cout<<"K行列構成したよ"<<endl;
     // confirm_Matrix(K,"K");
 }
+*/
 
 void Calculate_Amatrix(){
     int i,j,jstart,jend,k;
@@ -218,8 +219,8 @@ double Boundary_flux_function(double x, double y){
 
 void Calculate_matrix(){
     Calculate_Mmatrix();
-    Calculate_Kmatrix();
-    Calculate_Amatrix();
-    Calculate_Cormatrix();
+    // Calculate_Kmatrix();
+    // Calculate_Amatrix();
+    // Calculate_Cormatrix();
     // Calculate_F_body();
 }

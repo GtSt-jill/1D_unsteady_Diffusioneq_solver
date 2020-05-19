@@ -1,7 +1,7 @@
 using namespace std;
 
 // Fundamental consts
-const int n_p = 1000; // the number of nodes
+const int n_p = 10; // the number of nodes
 const int n_e = n_p-1; // the number of elements
 const int d_o_f = 1; //degree of freedom it isn't used here.
 const int d_o_s = 6; // degree of SSFEM
