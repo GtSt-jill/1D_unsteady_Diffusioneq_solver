@@ -525,7 +525,7 @@ void cg_solver_dynamics(vector <double> b){
             r[i]-=alpha*Mp[i];
         }
         
-        //　境界条件のケア
+        // 境界条件のケア
         for(i=0;i<n_p;i++){if(set_bc_list[i]==0){r[i]=0.0;}}
         
         err=dot_product(r,r,tmp_vec,d_p_terms,n_p_Lg2, n_p);
@@ -542,10 +542,217 @@ void cg_solver_dynamics(vector <double> b){
     } // end of the for-loop of iter
     // ---------- iterative calculation end -------------
     
-    //境界条件の再代入
+    // 境界条件の再代入
     for(i=0;i<n_p;i++){
         if(set_bc_list[i]==0){
             u[i]=0.0;
         }
+    }
+}
+
+// For SSFEM
+
+void cg_method_SSFEM(vector <double> b){
+    int i, j, k, l, m;
+    int node;
+    int NL = n_link.size();
+    int a = d_o_s*(KL+1);
+    
+    //--------- 内積計算用 ------------- 
+    // ! n_pをN_pにするのをわすれずに！！
+    int n_p_Lg2, d_p_terms;
+    vector <double> tmp_vec; // 内積計算での情報落ちを防ぐためのテンポラリーベクター
+    n_p_Lg2 = (int)ceil(log((double)N_p)/M_LN2);    // log((double)n_p) = ln(n_p), M_LN2:ln2 
+    d_p_terms = 1;
+    for(i=0; i<n_p_Lg2; i++){d_p_terms *= 2;}
+    tmp_vec.assign(d_p_terms,0.0);
+    //--------------------------------
+    
+    //境界条件の設定 境界では確率的な揺らぎは0に設定している．
+    for(i=0;i<N_p;i++){u[i]=0.0;}
+    for(i=0;i<d_o_s;i++){
+        for(j=0; j<n_p; j++){
+            if(set_bc_list[j]==0) {u[n_p*i+j]=0.0;}
+        }
+    }
+
+    vector <double> MU;
+    MU.assign(N_p, 0.0);
+    // ----------------------------MUの計算 start--------------------------
+    for(i=0; i<d_o_s; i++){
+            for(j=0; j<d_o_s; j++){
+                for(k=0; k<n_p; k++){
+                    MU[n_p*i+k] = 0.0;
+                    for(l=n_link_start[k]; l<n_link_start[k+1]; l++){
+                        node = n_link[l];
+                        MU[n_p*i+k] += PPx[a*i + d_o_s*j + 0] * M[l] * u[n_p*j+node];
+                    }
+                    
+                }
+            }
+        }
+
+    for(i=0; i<d_o_s; i++){
+        for(j=0; j<d_o_s; j++){
+            for(k=0; k<n_p; k++){
+                for(l=n_link_start[k]; l<n_link_start[k+1]; l++){
+                    node = n_link[l];
+                    for(m=0; m<KL+1; m++){
+                        MU[n_p*i+k] += PPx[a*i + d_o_s*j + m] * K[NL*m+l] * u[n_p*j+node] * dt / 2;
+                    }
+                }
+            }
+        }
+    }
+    // ----------------------------MUの計算 end--------------------------
+
+    // Setting for CG method.
+    int iter;
+    double alpha,beta;
+    double c1,c2,c3;
+    double err;
+    
+    vector <double> r;
+    vector <double> p;
+    vector <double> Mp;
+
+    r.assign(N_p,0.0); // 残差ベクトル
+    p.assign(N_p,0.0); // 修正ベクトル
+    Mp.assign(N_p,0.0);
+    
+    for(i=0;i<N_p;i++){u[i]=0.0;} // 初期化
+    for(i=0;i<N_p;i++){
+        r[i]=b[i]-MU[i];
+        p[i]=r[i];
+    }
+
+    // ---------- iterative calculation of CG start -------------
+    for(iter=1;iter<Iter_Max;iter++){
+        //境界条件のケア
+        for(i=0; i<d_o_s; i++){
+            for(j=0; j<n_p; j++){
+                if(set_bc_list[j]==0){
+                    p[n_p*i+j]=0.0;
+                }
+            }
+        }
+        
+        // ----------------------------Mpの計算 start--------------------------
+        for(i=0; i<d_o_s; i++){
+            for(j=0; j<d_o_s; j++){
+                for(k=0; k<n_p; k++){
+                    Mp[n_p*i+k] = 0.0;
+                    for(l=n_link_start[k]; l<n_link_start[k+1]; l++){
+                        node = n_link[l];
+                        Mp[n_p*i+k] += PPx[a*i + d_o_s*j + 0] * M[l] * p[n_p*j+node];
+                    }
+                    
+                }
+            }
+        }
+
+        for(i=0; i<d_o_s; i++){
+            for(j=0; j<d_o_s; j++){
+                for(k=0; k<n_p; k++){
+                    for(l=n_link_start[k]; l<n_link_start[k+1]; l++){
+                        node = n_link[l];
+                        for(m=0; m<KL+1; m++){
+                            Mp[n_p*i+k] += PPx[a*i + d_o_s*j + m] * K[NL*m+l] * p[n_p*j+node] * dt / 2;
+                        }
+                    }
+                }
+            }
+        }
+        // ----------------------------MUの計算 end--------------------------
+
+        c1 = dot_product(r,r,tmp_vec,d_p_terms,n_p_Lg2,N_p);
+        c2 = dot_product(p,Mp,tmp_vec,d_p_terms,n_p_Lg2, N_p);
+        alpha = c1/c2;
+        
+        for(i=0;i<N_p;i++){
+            u[i] += alpha*p[i];
+            r[i] -= alpha*Mp[i];
+        }
+        
+        // 境界条件のケア
+        for(i=0; i<d_o_s; i++){
+            for(j=0; j<n_p; j++){
+                if(set_bc_list[j]==0){r[n_p*i+j]=0.0;}
+            }
+        }
+        
+        err = dot_product(r,r,tmp_vec,d_p_terms,n_p_Lg2, N_p);
+        err /= N_p;
+        
+        if(iter%50==0&&iter<1000){cout<<"error:"<<err<<endl;} // confirm an error.
+        if(EPS > err) break;
+
+        c3 = dot_product(r,r,tmp_vec,d_p_terms,n_p_Lg2, N_p);
+        beta = c3/c1;
+        // if(iter%50==0&&iter<1000){cout<<"beta:"<<beta<<endl;}
+
+        for(i=0; i<N_p; i++){p[i]=r[i]+beta*p[i];}
+    } // end of the for-loop of iter
+    // ---------- iterative calculation end -------------
+    
+    // 境界条件の再代入
+    for(i=0; i<d_o_s; i++){
+        for(j=0; j<n_p; j++){
+            if(set_bc_list[j]==0) u[n_p*i+j]=0.0;
+        }
+    }
+}
+
+void Dynamics_SSFEM(){
+    int i, j, k, l, m;
+    int node;
+    int n;
+    int a = (KL+1)*d_o_s;
+    int NL = n_link.size();
+
+    // Setting an initial condition.
+    for(i=0; i<n_p; i++){
+        double x_tmp,y_tmp;
+        x_tmp=x[i];
+        if(x_tmp>0.5&&x_tmp<0.8){
+            u[i]=x_tmp*x_tmp;
+        }else{
+            u[i]=0.0;
+        }
+    }
+    vector <double> b;
+    b.assign(N_p, 0.0);
+
+    for(n = 1; n<3; n++){
+        printf("step_number : %d\n", n);
+        // MB*Uの計算
+        for(i=0; i<d_o_s; i++){
+            for(j=0; j<d_o_s; j++){
+                for(k=0; k<n_p; k++){
+                    b[n_p*i+k] = 0.0;
+                    for(l=n_link_start[k]; l<n_link_start[k+1]; l++){
+                        node = n_link[l];
+                        b[n_p*i+k] += PPx[a*i + d_o_s*j + 0] * M[l] * u[n_p*j+node];
+                    }
+                }
+            }
+        }
+
+        // K*dt/2 * Uの計算
+        for(i=0; i<d_o_s; i++){
+            for(j=0; j<d_o_s; j++){
+                for(k=0; k<n_p; k++){
+                    for(l=n_link_start[k]; l<n_link_start[k+1]; l++){
+                        node = n_link[l];
+                        for(m=0; m<KL+1; m++){
+                            b[n_p*i+k] -= PPx[a*i + d_o_s*j + m] * K[NL*m+l] * u[n_p*j+node] * dt / 2;
+                        }
+                    }
+                }
+            }
+        }
+
+        // conjugate gradient method
+        cg_method_SSFEM(b);
     }
 }

@@ -39,6 +39,10 @@ int main(void){
     Solve_Eigenvalue();
 
     Calculate_Kmatrix();
+
+    Calculate_PPxmatrix();
+
+    Dynamics_SSFEM();
     
     // set_bc(); // setting boundary condition
     

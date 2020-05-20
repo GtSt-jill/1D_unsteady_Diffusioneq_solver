@@ -358,3 +358,19 @@ void Calculate_Kmatrix(){
     printf("K_SSFEMを構成したよ．\n");
     confirm_array_double(K, NL*(KL+1), "K");
 }
+
+void Calculate_PPxmatrix(){
+    int a = (KL+1)*d_o_s;
+    int b = KL+1;
+    // the pattern of KL = 2, d_o_s = 6
+    PPx[a*0 + b*0 + 0] = 1;     PPx[a*1 + b*1 + 0] = 1;
+    PPx[a*2 + b*2 + 0] = 1;     PPx[a*3 + b*3 + 0] = 2;
+    PPx[a*4 + b*4 + 0] = 1;     PPx[a*5 + b*5 + 0] = 2;
+
+    PPx[a*1 + b*0 + 1] = 1;     PPx[a*0 + b*1 + 1] = 1;
+    PPx[a*2 + b*0 + 2] = 1;     PPx[a*0 + b*2 + 2] = 1;
+    PPx[a*3 + b*1 + 1] = 2;     PPx[a*1 + b*3 + 1] = 2;
+    PPx[a*4 + b*1 + 2] = 1;     PPx[a*1 + b*4 + 2] = 1;
+    PPx[a*4 + b*2 + 1] = 1;     PPx[a*2 + b*4 + 1] = 1;
+    PPx[a*5 + b*2 + 2] = 2;     PPx[a*2 + b*5 + 2] = 2;
+}

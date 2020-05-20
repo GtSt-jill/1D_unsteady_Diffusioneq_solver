@@ -6,6 +6,7 @@ const int n_e = n_p-1; // the number of elements
 const int d_o_f = 1; //degree of freedom it isn't used here.
 const int d_o_s = 6; // degree of SSFEM
 const int KL = 2; // order of KL expansion
+const int N_p = n_p * d_o_s;
 
 // Constants for conjugate gradient method
 #define Iter_Max 10000 // limit times for iterative methods
@@ -33,12 +34,12 @@ vector <double> M_c; // Correction term Matrix from SUPG method
 vector <double> K; // Diffution Matrix 熱伝導行列 力学では剛性行列
 vector <double> A; // Advection Matrix
 vector <double> A_c; // Correction term Matrix from SUPG method
-vector <double> F_body; //熱流束vector　力学では体にかかる外力項
-vector <double> F_boundary; //熱流束vector　力学では境界面にかかる外力項
+vector <double> F_body; //熱流束vector 力学では体にかかる外力項
+vector <double> F_boundary; //熱流束vector 力学では境界面にかかる外力項
 vector <double> u; //solution of this analysis
 
 // Consts for dynamical analysis
-const double Courant = 0.1; // When using explicit method, we consider Courant condtion.
+const double Courant = 0.1; // When using explicit method, we consider the Courant condtion.
 const double max_step = 1001;
 const double total_time = 1.0;
 double dt = total_time/max_step;
@@ -48,4 +49,5 @@ double dt = total_time/max_step;
 vector <double> Cov;
 vector <double> eigenvectors;
 vector <double> eigenvalues;
+vector <int> PPx;
 
