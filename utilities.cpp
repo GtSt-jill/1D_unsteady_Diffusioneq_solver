@@ -509,7 +509,7 @@ void cg_solver_dynamics(vector <double> b){
         }
         
         for(i=0;i<n_p;i++){
-            Mp[i]=0.0;
+            Mp[i]=0.0; // ! ATTENTION
             for(j=n_link_start[i];j<n_link_start[i+1];j++){
                 node=n_link[j];
                 Mp[i]+=M[j]*p[node];
@@ -551,12 +551,11 @@ void cg_solver_dynamics(vector <double> b){
 }
 
 // For SSFEM
-
-void cg_method_SSFEM(vector <double> b){
+void cgmethod_dynamics_SSFEM(vector <double> b){
     int i, j, k, l, m;
     int node;
     int NL = n_link.size();
-    int a = d_o_s*(KL+1);
+    int a = (KL+1)*d_o_s;
     
     //--------- 内積計算用 ------------- 
     // ! n_pをN_pにするのをわすれずに！！
@@ -580,21 +579,20 @@ void cg_method_SSFEM(vector <double> b){
     MU.assign(N_p, 0.0);
     // ----------------------------MUの計算 start--------------------------
     for(i=0; i<d_o_s; i++){
+        for(k=0; k<n_p; k++){
             for(j=0; j<d_o_s; j++){
-                for(k=0; k<n_p; k++){
-                    MU[n_p*i+k] = 0.0;
-                    for(l=n_link_start[k]; l<n_link_start[k+1]; l++){
-                        node = n_link[l];
-                        MU[n_p*i+k] += PPx[a*i + d_o_s*j + 0] * M[l] * u[n_p*j+node];
-                    }
-                    
+                for(l=n_link_start[k]; l<n_link_start[k+1]; l++){
+                    node = n_link[l];
+                    MU[n_p*i+k] += PPx[a*i + d_o_s*j + 0] * M[l] * u[n_p*j+node];
                 }
+                    
             }
         }
+    }
 
     for(i=0; i<d_o_s; i++){
-        for(j=0; j<d_o_s; j++){
-            for(k=0; k<n_p; k++){
+        for(k=0; k<n_p; k++){
+            for(j=0; j<d_o_s; j++){
                 for(l=n_link_start[k]; l<n_link_start[k+1]; l++){
                     node = n_link[l];
                     for(m=0; m<KL+1; m++){
@@ -616,18 +614,18 @@ void cg_method_SSFEM(vector <double> b){
     vector <double> p;
     vector <double> Mp;
 
-    r.assign(N_p,0.0); // 残差ベクトル
+    r.assign(N_p,0.0); // residual vector
     p.assign(N_p,0.0); // 修正ベクトル
     Mp.assign(N_p,0.0);
     
-    for(i=0;i<N_p;i++){u[i]=0.0;} // 初期化
+    for(i=0;i<N_p;i++){u[i]=0.0;} // initialize
     for(i=0;i<N_p;i++){
         r[i]=b[i]-MU[i];
         p[i]=r[i];
     }
 
     // ---------- iterative calculation of CG start -------------
-    for(iter=1;iter<Iter_Max;iter++){
+    for(iter=1; iter<Iter_Max; iter++){
         //境界条件のケア
         for(i=0; i<d_o_s; i++){
             for(j=0; j<n_p; j++){
@@ -639,21 +637,20 @@ void cg_method_SSFEM(vector <double> b){
         
         // ----------------------------Mpの計算 start--------------------------
         for(i=0; i<d_o_s; i++){
-            for(j=0; j<d_o_s; j++){
-                for(k=0; k<n_p; k++){
-                    Mp[n_p*i+k] = 0.0;
+            for(k=0; k<n_p; k++){
+                Mp[n_p*i+k] = 0.0;
+                for(j=0; j<d_o_s; j++){
                     for(l=n_link_start[k]; l<n_link_start[k+1]; l++){
                         node = n_link[l];
                         Mp[n_p*i+k] += PPx[a*i + d_o_s*j + 0] * M[l] * p[n_p*j+node];
                     }
-                    
                 }
             }
         }
 
         for(i=0; i<d_o_s; i++){
-            for(j=0; j<d_o_s; j++){
-                for(k=0; k<n_p; k++){
+            for(k=0; k<n_p; k++){
+                for(j=0; j<d_o_s; j++){
                     for(l=n_link_start[k]; l<n_link_start[k+1]; l++){
                         node = n_link[l];
                         for(m=0; m<KL+1; m++){
@@ -663,28 +660,30 @@ void cg_method_SSFEM(vector <double> b){
                 }
             }
         }
-        // ----------------------------MUの計算 end--------------------------
+        // ----------------------------Mpの計算 end--------------------------
 
-        c1 = dot_product(r,r,tmp_vec,d_p_terms,n_p_Lg2,N_p);
-        c2 = dot_product(p,Mp,tmp_vec,d_p_terms,n_p_Lg2, N_p);
+        // if(iter == 20) confirm_array_double(r, N_p, "r");
+        // if(iter == 20) confirm_array_double(p, N_p, "p");
+        // if(iter == 20) confirm_array_double(Mp, N_p, "Mp");
+        c1 = dot_product(r, r, tmp_vec, d_p_terms, n_p_Lg2, N_p);
+        c2 = dot_product(p, Mp, tmp_vec, d_p_terms, n_p_Lg2, N_p);
         alpha = c1/c2;
+        // if(iter%50 == 1){printf("iteration : %d   alpha : %e\n", iter, c1);} // confirm errors.
         
-        for(i=0;i<N_p;i++){
+        for(i=0; i<N_p; i++){
             u[i] += alpha*p[i];
             r[i] -= alpha*Mp[i];
         }
         
         // 境界条件のケア
         for(i=0; i<d_o_s; i++){
-            for(j=0; j<n_p; j++){
-                if(set_bc_list[j]==0){r[n_p*i+j]=0.0;}
-            }
+            for(j=0; j<n_p; j++) {if(set_bc_list[j]==0){r[n_p*i+j]=0.0;}}
         }
         
         err = dot_product(r,r,tmp_vec,d_p_terms,n_p_Lg2, N_p);
         err /= N_p;
         
-        if(iter%50==0&&iter<1000){cout<<"error:"<<err<<endl;} // confirm an error.
+        if(iter%50==0){printf("iteration : %d   error : %e\n", iter, err);} // confirm errors.
         if(EPS > err) break;
 
         c3 = dot_product(r,r,tmp_vec,d_p_terms,n_p_Lg2, N_p);
@@ -692,7 +691,7 @@ void cg_method_SSFEM(vector <double> b){
         // if(iter%50==0&&iter<1000){cout<<"beta:"<<beta<<endl;}
 
         for(i=0; i<N_p; i++){p[i]=r[i]+beta*p[i];}
-    } // end of the for-loop of iter
+    }
     // ---------- iterative calculation end -------------
     
     // 境界条件の再代入
@@ -714,22 +713,26 @@ void Dynamics_SSFEM(){
     for(i=0; i<n_p; i++){
         double x_tmp,y_tmp;
         x_tmp=x[i];
-        if(x_tmp>0.5&&x_tmp<0.8){
-            u[i]=x_tmp*x_tmp;
+        if(x_tmp>0&&x_tmp<L/4){
+            u[i] = 4 / L * x_tmp;
+        }else if(x_tmp>=L/4&&x_tmp<L/2){
+            u[i] = -4 / L * x_tmp + 2;
         }else{
-            u[i]=0.0;
+            u[i] = 0.0;
         }
     }
+
     vector <double> b;
     b.assign(N_p, 0.0);
 
-    for(n = 1; n<3; n++){
+    // ---------------------------------- dynamical analysis start -------------------------------------
+    for(n=1; n<2; n++){
         printf("step_number : %d\n", n);
         // MB*Uの計算
         for(i=0; i<d_o_s; i++){
-            for(j=0; j<d_o_s; j++){
-                for(k=0; k<n_p; k++){
-                    b[n_p*i+k] = 0.0;
+            for(k=0; k<n_p; k++){
+                b[n_p*i+k] = 0.0;
+                for(j=0; j<d_o_s; j++){
                     for(l=n_link_start[k]; l<n_link_start[k+1]; l++){
                         node = n_link[l];
                         b[n_p*i+k] += PPx[a*i + d_o_s*j + 0] * M[l] * u[n_p*j+node];
@@ -740,8 +743,8 @@ void Dynamics_SSFEM(){
 
         // K*dt/2 * Uの計算
         for(i=0; i<d_o_s; i++){
-            for(j=0; j<d_o_s; j++){
-                for(k=0; k<n_p; k++){
+            for(k=0; k<n_p; k++){
+                for(j=0; j<d_o_s; j++){
                     for(l=n_link_start[k]; l<n_link_start[k+1]; l++){
                         node = n_link[l];
                         for(m=0; m<KL+1; m++){
@@ -751,8 +754,10 @@ void Dynamics_SSFEM(){
                 }
             }
         }
+        confirm_array_double(b, N_p, "b");
 
         // conjugate gradient method
-        cg_method_SSFEM(b);
+        cgmethod_dynamics_SSFEM(b);
     }
+    // ---------------------------------- dynamical analysis end -------------------------------------
 }

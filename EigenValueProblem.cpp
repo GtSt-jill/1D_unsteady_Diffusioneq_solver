@@ -1,8 +1,8 @@
 //数値誤差を回避できる内積計算のための関数
-double dot_product(vector <double> &v, vector <double> &w, vector <double> &tmp, int n, int lg2n, int N)
-{
+//内積を求める関数 Mはベクトルの成分数
+double dot_product(vector<double> &v, vector<double> &w, vector<double> &tmp, int n, int lg2n, int M){
     int i,ii;
-    for(i=0; i<N; i++)
+    for(i=0; i<M; i++)
     {
         tmp[i]=v[i]*w[i];            //vとwの内積
     }
@@ -270,7 +270,7 @@ void Normalize_Eigenfunction(){
 
         for(i=0; i<n_p; i++){eigenvectors[n_p*k+i] = eigenvector_tmp[i] / normalize_const;}
     }
-    confirm_array_double(eigenvectors, n_p*KL, "eigenvectors");
+    // confirm_array_double(eigenvectors, n_p*KL, "eigenvectors");
 }
 
 void Solve_Eigenvalue(){
