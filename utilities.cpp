@@ -297,7 +297,7 @@ void Dynamics(){
 }
 
 //Ku=Fを解いている共役勾配法 静的問題に用いる．※Kが対称行列のときのみ適用可能．
-void Conjugate_gradient_method(){
+void cgmethod_statics(){
     int i,j;
     int node;
     vector <double> KA; //K_matとA_matの和
@@ -448,7 +448,7 @@ void Conjugate_gradient_method(){
 }
 
 // Mx=bを解く共役勾配法 動的解析に用いる
-void cg_solver_dynamics(vector <double> b){
+void cgmethod_dynamics(vector <double> b){
     int i,j;
     int node;
     
@@ -585,7 +585,6 @@ void cgmethod_dynamics_SSFEM(vector <double> b){
                     node = n_link[l];
                     MU[n_p*i+k] += PPx[a*i + d_o_s*j + 0] * M[l] * u[n_p*j+node];
                 }
-                    
             }
         }
     }

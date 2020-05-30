@@ -25,8 +25,10 @@
 
 int main(void){
     clock_t start=clock();
-    int i;
+
     printf("節点数 : %d\n要素数 : %d\n", n_p, n_e);
+
+    printf("Diffusion Coefficient : %e\n", Di);
 
     Assign_array(); // define arrays
     

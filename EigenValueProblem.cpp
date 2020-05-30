@@ -66,7 +66,7 @@ void Calculate_Covmatrix(){
 }
 
 // AAq = bを解くプログラム
-void eigen_cgmethod(vector <double> AA, vector <double> &q, vector <double> b){
+void cgmethod_eigen(vector <double> AA, vector <double> &q, vector <double> b){
     int i, j;
     int iter;
     int node;
@@ -207,7 +207,7 @@ void Power_method(){
                 for(i=0;i<n_p;i++){Cov_ev1[i]=Cov_ev2[i];}
             }
 
-            eigen_cgmethod(M, M_inv_Cov_ev, Cov_ev1);
+            cgmethod_eigen(M, M_inv_Cov_ev, Cov_ev1);
 
             eigenvalue_tmp = eigenvalues[k];
 
