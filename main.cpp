@@ -41,7 +41,7 @@ int main(void){
     
     Dynamics(); // dynamical analysis
     
-    //Calculation time
+    // Calculation time
     clock_t end=clock();
     const double time = static_cast <double> (end-start)/CLOCKS_PER_SEC*1000;
     printf("Calculation time : %.3f [ms]\n",time);

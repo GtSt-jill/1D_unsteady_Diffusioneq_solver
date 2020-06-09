@@ -62,7 +62,7 @@ void Jacobi_static(){
         }
     }
     
-    // KAの対角項と非対角項の生成　要確認
+    // KAの対角項と非対角項の生成 要確認
     vector <double> KA_d; // 対角項
     vector <double> KA_t; // 非対角項
     KA_d.assign(n_p,0.0);
@@ -279,7 +279,7 @@ void Dynamics(){
     //--------------- dynamical analysis start ----------------
     char fname[100];// 配列の大きさに注意！！ zsh: abort というエラー出る．
     sprintf(fname,"array/u_dynamics_ad=%.2f_Di=%.2f.dat",ad,Di);
-    ofstream out(fname,ios::app);
+    ofstream out(fname,ios::app); // 上書き設定
     
     // File-initializing ios::appによるファイル上書きのため初期化が必要．
     ofstream out_tmp(fname);
