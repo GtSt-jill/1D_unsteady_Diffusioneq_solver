@@ -4,13 +4,13 @@ import matplotlib.animation as animation
 # import os
 # print(os.getcwd())
 
-n_p=101 # number of nodes
+n_p=501 # number of nodes
 n_e=n_p-1 # number of elements
 
 frame_number = 100
 
 fig = plt.figure()
-data=np.loadtxt("animation/u_dynamics_ad=1.00_Di=0.01.dat")
+data=np.loadtxt("array/u_dynamics_ad=1.00_Di=0.01.dat")
 x=data[:,0]
 u=data[:,1]
 

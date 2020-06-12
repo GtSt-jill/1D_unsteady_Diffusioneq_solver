@@ -11,7 +11,7 @@ const int d_o_f = 1; //degree of freedom it isn't used here.
 
 // Physical parameters
 const double L = 1.0; // length
-const double ad = 0.5; // advection velosity
+const double ad = 1.0; // advection velosity
 const double Di = 0.01; // diffusion coefficient
 
 // Data regarding mesh
@@ -29,8 +29,8 @@ vector <double> M_c; // Correction term Matrix from SUPG method
 vector <double> K; // Diffution Matrix 熱伝導行列 力学では剛性行列
 vector <double> A; // Advection Matrix
 vector <double> A_c; // Correction term Matrix from SUPG method
-vector <double> F_body; //熱流束vector　力学では体にかかる外力項
-vector <double> F_boundary; //熱流束vector　力学では境界面にかかる外力項
+vector <double> F_body; //熱流束vector 力学では体にかかる外力項
+vector <double> F_boundary; //熱流束vector 力学では境界面にかかる外力項
 vector <double> u; //solution of this analysis
 
 // Consts for dynamical analysis

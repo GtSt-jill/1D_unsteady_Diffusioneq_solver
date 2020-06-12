@@ -151,7 +151,8 @@ void Calculate_Cormatrix(){
         
     }
     else{
-        double Di_opt = ad*dx*(1/tanh(ad*dx/2/Di)-2*Di/ad/dx)/2; // optimized diffusion coefficient
+        double Di_opt = ad*dx*(1/tanh(ad*dx/2/Di)-2*Di/ad/dx)/2; // ! optimized diffusion coefficient
+        // Di_opt = ad* L/n_e /2; // ! 通常の風上差分の人工拡散係数
         // 実際は陽に持たなくて良いが，プログラムの可読性を高めるため構成．大規模化したいときはメモリを食うので消したほうが良い．
         A_c.assign(n_link.size(),0.0); // Correction of Advection Matrix
         M_c.assign(n_link.size(),0.0); // Correction of Mass Matrix

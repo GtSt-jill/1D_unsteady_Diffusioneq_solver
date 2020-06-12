@@ -464,7 +464,7 @@ void Conjugate_gradient_method(){
 }
 
 // Mx=bを解く共役勾配法 動的解析に用いる
-void cg_solver_dynamics(vector <double> b){
+void BiCG_dynamics(vector <double> b){
     int i,j;
     int node;
     
