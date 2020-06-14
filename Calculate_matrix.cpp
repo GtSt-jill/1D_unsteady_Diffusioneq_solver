@@ -212,7 +212,7 @@ double Boundary_flux_function(double x, double y){
     return x*y;
 }
 
-// 一旦保留　境界条件はあとで発展させる．
+// 一旦保留 境界条件はあとで発展させる．
 // void Calculate_F_boundary(){
 //    F_boundary.assign(n_p,0.0);
 // }
