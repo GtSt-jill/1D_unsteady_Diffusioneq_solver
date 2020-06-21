@@ -1,7 +1,7 @@
 using namespace std;
 
 // Fundamental consts
-const int n_p = 1001; // the number of nodes
+const int n_p = 5001; // the number of nodes
 const int n_e = n_p-1; // the number of elements
 const int d_o_f = 1; //degree of freedom it isn't used here.
 
@@ -35,6 +35,6 @@ vector <double> u; //solution of this analysis
 
 // Consts for dynamical analysis
 const double Courant = 0.1; // When using explicit method, we consider Courant condtion.
-const double max_step = 1001;
+const double max_step = 5001;
 const double total_time = 1.0;
 double dt = total_time/max_step;

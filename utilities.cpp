@@ -255,7 +255,7 @@ void Jacobi_dynamics(vector <double> b){
         if(error<EPS){break;} // Convergence Judgement
         if(iter==Iter_Max-1) cout<<error<<endl;
     }
-    printf("iter : %d\n", iter);
+    // printf("iter : %d\n", iter);
     // --------------- iterative calculation ends ----------------
     
     //--------- 境界条件の再代入 ----------
@@ -392,7 +392,7 @@ void BiCG_dynamics(vector <double> b){
             p_bi[i] = r_bi[i] + beta*p_bi[i];
         }
     } // end of the for-loop of iter
-    printf("iter : %d\n", iter);
+    // printf("iter : %d\n", iter);
     // ---------- iterative calculation end -------------
     
     //境界条件の再代入
@@ -408,7 +408,7 @@ void Dynamics(){
     int i,j;
     int node;
     int n;
-    const int n_o_f = 100;
+    const int n_o_f = 100; // ? number of frames
     
     // Intitial condtions of u
     for(i=0;i<n_p;i++){
@@ -441,6 +441,14 @@ void Dynamics(){
     for(n = 1; n < max_step; n++){
         if(n%50==0) printf("step number : %d\n",n);
         
+        // File-exporting
+        if(n % int(max_step / n_o_f) == 1){
+            for(i = 0; i < n_p; i++){
+                out << x[i] << " " << u[i] << endl;
+            }
+            // paraview_visualize(n); // paraviewへの出力
+        }
+
         // 中央差分法  差分法の結果と等価
         for(i=0;i<n_p;i++){
             M2dtSu[i]=0.0;
@@ -451,16 +459,10 @@ void Dynamics(){
         }
         
         // perform Jacobi scheme
-        // Jacobi_dynamics(M2dtSu);
-        BiCG_dynamics(M2dtSu);
+        Jacobi_dynamics(M2dtSu);
+        // BiCG_dynamics(M2dtSu);
         
-        // File-exporting
-        if(n % int(max_step / n_o_f) == 1){
-            for(i = 0; i < n_p; i++){
-                out << x[i] << " " << u[i] << endl;
-            }
-            // paraview_visualize(n); // paraviewへの出力
-        }
+        
     }
     out.close();
     // -------------- dynamical analysis end -------------------
