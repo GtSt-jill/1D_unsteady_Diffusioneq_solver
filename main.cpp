@@ -12,7 +12,7 @@
 #include <cstdio>
 
 #include "global.h" // define arrays and physical const
-#include "input_file_reader.cpp" // input mesh data
+#include "input_file.cpp" // input mesh data
 #include "geometry.cpp" // assign arrays and construct geometry info
 #include "display_array.cpp" // for confirming arrays
 #include "Calculate_matrix.cpp" // calculate matrices and vectors
