@@ -23,18 +23,17 @@
 // The program to solve Mu'+Ku=F. ' is a time-differential operator.
 
 int main(void){
-    clock_t start=clock();
-    int i;
+    clock_t start = clock(); // 時間計測のため
     
     printf("節点数 : %d\n要素数 : %d\n", n_p, n_e);
 
-    Assign_array();
+    Assign_array(); // 配列の定義
     
-    input_file_reader();
+    input_file_reader(); // メッシュ情報の取得
     
-    InitialAdjacency();
+    InitialAdjacency(); // 幾何情報の構成
     
-    Calculate_matrix();
+    Calculate_matrix(); // 行列の計算
     
     set_bc(); // setting boundary condition
     
@@ -43,7 +42,7 @@ int main(void){
     Dynamics(); // dynamical analysis
     
     // Calculation time
-    clock_t end=clock();
+    clock_t end = clock();
     const double time = static_cast <double> (end-start)/CLOCKS_PER_SEC*1000;
     printf("Calculation time : %.3f [ms]\n",time);
     return 0;
