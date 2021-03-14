@@ -35,6 +35,6 @@ vector <double> u; //solution of this analysis
 
 // Consts for dynamical analysis
 const double Courant = 0.1; // When using explicit method, we consider Courant condtion.
-const double max_step = 5001;
+const double max_step = 5000;
 const double total_time = 1.0;
 double dt = total_time/max_step;

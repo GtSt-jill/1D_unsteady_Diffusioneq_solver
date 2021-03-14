@@ -1,8 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-# import os
-# print(os.getcwd())
 
 def main():
     n_p = 5001 # number of nodes
